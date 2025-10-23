@@ -36,7 +36,7 @@ class AuthenticationController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                 ],
-                'access_token' => $token
+                'token' => $token
             ], 200);
 
         } catch (Exception $e) {

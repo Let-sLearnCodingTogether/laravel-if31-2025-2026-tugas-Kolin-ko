@@ -7,4 +7,13 @@ const http = axios.create({
     }
 });
 
+http.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem("token-bebas");
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
 export default http;

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Input from "../../../../components/ui/Input"
-import Button from "../../../../components/ui/Button"
 import http from "../../../../api/apiClient";
+import { NavLink, useNavigate } from "react-router";
+import Button from "../../../../components/ui/Button";
 
 export default function LoginPage(){
     const [form, setForm] = useState({
@@ -9,8 +9,7 @@ export default function LoginPage(){
         password : ""
     })
 
-    const [notes, setNotes] = useState([])
-    
+    const navigate = useNavigate();
 
     const handleFormChange = (event) => {
         const {name, value} = event.target;
@@ -21,27 +20,30 @@ export default function LoginPage(){
         });
     }
 
-     const fetchNotes = async () => {
-        const response = await http.get('/note')
-        console.log(response.data.data.data);
-        
-        setNotes(response.data.data.data)
-    } 
-
      const handleLogin = async (event) => {
         event.preventDefault();
 
-        const response = await http.post("/login", form)
-        console.log(response);
-
-        if(response.status == 200) {
-            sessionStorage.setItem("token-bebas",
-                response.data.data.token)
-                fetchNotes()
-        }
+        try {
+            const response = await http.post("/login", form);
+            const token = response.data?.token
+            console.log(response.data);
+            if(response.status === 200 && token) {
+                sessionStorage.setItem("token-bebas", token)
+                
+                navigate("/list-note",{
+                    replace : true
+                })
+                } else {
+                    console.log("Token tidak ditemukan", response.status);
+                } 
+    } catch (error){
+        console.log(error.response ?? error);
     }
 
-     return <div className="h-full bg-gray-900">
+    
+}
+
+     return <div className="flex flex-col justify-center sm:h-screen p-4 h-full bg-gray-900">
         <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
         <>
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -57,60 +59,59 @@ export default function LoginPage(){
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             <form onSubmit={handleLogin} method="POST" className="space-y-6">
                 <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-100">
-                    Email address
-                </label>
-                <div className="mt-2">
-                    <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleFormChange}
-                    required
-                    autoComplete="email"
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                    placeholder="Enter Email"
-                    />
-                </div>
-                </div>
-
-                <div>
-                <div className="flex items-center justify-between">
-                    <label htmlFor="password" className="block text-sm/6 font-medium text-gray-100">
-                    Password
+                    <label htmlFor="email" className="block text-sm/6 font-medium text-gray-100">
+                        Email address
                     </label>
-                </div>
-                <div className="mt-2">
-                    <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleFormChange}
-                    required
-                    autoComplete="current-password"
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                    placeholder="Enter password"
-                    />
-                </div>
+                    <div className="mt-2">
+                        <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleFormChange}
+                        required
+                        autoComplete="email"
+                        className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                        placeholder="Enter Email"
+                        />
+                    </div>
                 </div>
 
                 <div>
-                <button
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="password" className="block text-sm/6 font-medium text-gray-100">
+                        Password
+                        </label>
+                    </div>
+                    <div className="mt-2">
+                        <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={form.password}
+                        onChange={handleFormChange}
+                        required
+                        autoComplete="current-password"
+                        className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                        placeholder="Enter password"
+                        />
+                    </div>
+                </div>
+                <div>
+                <Button
                     type="submit"
                     className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                 >
                     Sign in
-                </button>
+                </Button>
                 </div>
             </form>
 
             <p className="mt-10 text-center text-sm/6 text-gray-400">
                 Belum ada akun?{' '}
-                <a href="/register" className="font-semibold text-blue-600 hover:underline ml-1">
+                <NavLink to="/register" className="font-semibold text-blue-600 hover:underline ml-1">
                 Register
-                </a>
+                </NavLink>
             </p>
             </div>
         </div>
