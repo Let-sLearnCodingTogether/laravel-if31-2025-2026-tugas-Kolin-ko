@@ -124,7 +124,7 @@ export default function RegisterPage(){
             </Button>
           </div>
           <p className="mt-10 text-center text-sm/6 text-gray-400">Already have an account?
-            <NavLink to="/login" className="text-blue-600 font-medium hover:underline ml-1">Login here
+            <NavLink to="/" className="text-blue-600 font-medium hover:underline ml-1">Login here
             </NavLink>  
           </p>
         </form>
